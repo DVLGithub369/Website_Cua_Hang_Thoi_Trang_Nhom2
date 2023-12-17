@@ -10,7 +10,7 @@
 			<thead class="thead-light">
 				<tr>
 					<th scope="col">#</th>
-					<th scope="col">Tên giày</th>
+					<th scope="col">Tên sản phẩm</th>
 					<th scope="col">Hình ảnh</th>
 					<th scope="col">Loại</th>
 					<th scope="col">Ngày tạo</th>
