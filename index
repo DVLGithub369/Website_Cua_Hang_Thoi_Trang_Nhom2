@@ -1,0 +1,320 @@
+<?php 
+	session_start();
+	require_once './models/TaiKhoan.php';
+	require_once './models/LoaiSP.php';
+	require_once './models/SanPham.php';
+	require_once './models/DonHang.php';
+
+	new duong_dan();
+	class duong_dan{
+		private $TaiKhoan;
+		private $Loai;
+		private $SanPham;
+		private $DonHang;
+
+		function __construct(){
+			$this->TaiKhoan = new TaiKhoan();
+			$this->Loai = new LoaiSP();
+			$this->SanPham = new SanPham();
+			$this->DonHang = new DonHang();
+
+			$this->Routes();
+		}
+
+		public function view($view, $data=[]){
+			require_once "./views/".$view.".php";
+		}
+
+		public function generateRandomString() {
+		    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		    $randomString = '';
+
+		    for ($i = 0; $i < 12; $i++) {
+		        $randomString .= $characters[rand(0, strlen($characters) - 1)];
+		    }
+
+		    return $randomString;
+		}
+
+		public function Routes(){
+			if(isset($_GET['q'])){
+				$q = $_GET['q'];
+			}else{
+				$q = "";
+			}
+
+			if(isset($_GET['search']))
+				$search = $_GET['search'];
+
+			if(isset($search)){
+				$this->view('layout', [
+					'trang' => 'timkiem',
+					'sanpham' => $this->SanPham->Tim($_GET['search']),
+				]);
+			}
+
+			if(isset($q)){
+				switch ($q) {
+					case 'dang-nhap':{
+						$this->view('layout', [
+							'trang' => 'dangnhap',
+						]);
+						break;
+					}
+
+					case 'xu-ly-dang-nhap':{
+						$user = $_POST['tendangnhap'];
+						$pass = $_POST['matkhau'];
+						$taikhoan = $this->TaiKhoan->DangNhap($user, $pass);
+						if(is_array($taikhoan)){
+							$_SESSION['id'] = $taikhoan['id'];
+							$_SESSION['tenDN'] = $taikhoan['tendangnhap'];
+							$_SESSION['loaitk'] = $taikhoan['loaitk'];
+							header('location:./');
+						}else{
+							header('location:index.php?q=dang-nhap');
+						}
+						break;
+					}
+
+					case 'dang-xuat':{
+						unset($_SESSION['id']);
+						unset($_SESSION['tenDN']);
+						unset($_SESSION['loaitk']);
+						header('location:./');
+						break;
+					}
+
+					case 'dang-ky':{
+						$this->view('layout', [
+							'trang' => 'dangky',
+						]);
+						break;
+					}
+
+					case 'xu-ly-dang-ky':{
+						$user = $_POST['tendangnhap'];
+						$pass = $_POST['matkhau'];
+						$loai = 'member';
+						$this->TaiKhoan->Insert($user, $pass, $loai);
+						header('location:index.php?q=dang-nhap');
+						break;
+					}
+
+					case 'tai-khoan-cua-toi':{
+						$this->view('layout', [
+							'trang' => 'taikhoancuatoi',
+						]);
+						break;
+					}
+
+					case 'cap-nhat-tai-khoan-cua-toi':{
+						$id = $_POST['id'];
+						$user = $_POST['tendangnhap'];
+						$pass = $_POST['matkhau'];
+
+						if(strlen($user) > 0){
+							$this->TaiKhoan->Update_TenDN($user, $id);
+							$_SESSION['tenDN'] = $user;
+						}
+						if(strlen($pass) > 0){
+							$this->TaiKhoan->Update_MatKhau($pass, $id);
+						}
+						header('location:index.php?q=tai-khoan-cua-toi');
+						break;
+					}
+
+					case 'danh-sach-tai-khoan':{
+						$this->view('layout', [
+							'trang' => 'taikhoan',
+							'taikhoan' => $this->TaiKhoan->DanhSach(),
+						]);
+						break;
+					}
+
+					case 'sua-tai-khoan':{
+						$this->view('layout', [
+							'trang' => 'sua_taikhoan',
+							'taikhoan' => $this->TaiKhoan->ChiTiet($_GET['id']),
+						]);
+						break;
+					}
+
+					case 'xu-ly-sua-tai-khoan':{
+						$id = $_POST['id'];
+						$loaitk = $_POST['loaitk'];
+						$this->TaiKhoan->Update_LoaiTK($loaitk, $id);
+						header('location:index.php?q=danh-sach-tai-khoan');
+						break;
+					}
+
+					case 'xoa-tai-khoan':{
+						$this->TaiKhoan->Xoa($_GET['id']);
+						header('location:index.php?q=danh-sach-tai-khoan');
+						break;
+					}
+
+					case 'danh-sach-loai-san-pham':{
+						$this->view('layout', [
+							'trang' => 'loaisanpham',
+							'loai' => $this->Loai->DanhSach(),
+						]);
+						break;
+					}
+
+					case 'them-loai-san-pham':{
+						$this->view('layout', [
+							'trang' => 'them_loaisanpham',
+						]);
+						break;
+					}
+
+					case 'xu-ly-them-loai-san-pham':{
+						$this->Loai->Them($_POST['ten']);
+						header('location:index.php?q=danh-sach-loai-san-pham');
+						break;
+					}
+
+					case 'xoa-loai-san-pham':{
+						$this->Loai->Xoa($_GET['id']);
+						header('location:index.php?q=danh-sach-loai-san-pham');
+						break;
+					}
+
+					case 'danh-sach-san-pham':{
+						$this->view('layout', [
+							'trang' => 'sanpham',
+							'sanpham' => $this->SanPham->DanhSach(),
+						]);
+						break;
+					}
+
+					case 'them-san-pham':{
+						$this->view('layout', [
+							'trang' => 'them_sanpham',
+							'loai' => $this->Loai->DanhSach(),
+						]);
+						break;
+					}
+
+					case 'xu-ly-them-san-pham':{
+						$ten = $_POST['ten'];
+						$loai = $_POST['loai'];
+						$mota = $_POST['mota'];
+						$gia = $_POST['gia'];
+
+						$file = $_FILES['hinh'];
+						$duoi_file = '.' . pathinfo($file['name'], PATHINFO_EXTENSION);
+						$ten_hinh = "./public/hinhanh/" . $this->generateRandomString() . $duoi_file;
+						move_uploaded_file($file["tmp_name"], $ten_hinh);
+
+						$this->SanPham->Them($ten, $gia, $ten_hinh, $mota, $loai);
+						header('location:index.php?q=danh-sach-san-pham');
+						break;
+					}
+
+					case 'sua-san-pham':{
+						$this->view('layout', [
+							'trang' => 'sua_sanpham',
+							'loai' => $this->Loai->DanhSach(),
+							'sanpham' => $this->SanPham->ChiTiet($_GET['id']),
+						]);
+						break;
+					}
+
+					case 'xu-ly-sua-san-pham':{
+						$id = $_POST['id'];
+						$ten = $_POST['ten'];
+						$loai = $_POST['loai'];
+						$mota = $_POST['mota'];
+						$gia = $_POST['gia'];
+						$ten_hinh = $_POST['hinh_cu'];
+
+						$file_hinh = $_FILES['hinh'];
+						if($file_hinh['name'] != null){
+							$duoi_file = '.' . pathinfo($file_hinh['name'], PATHINFO_EXTENSION);
+							$ten_hinh = "./public/hinhanh/" . $this->generateRandomString() . $duoi_file;
+							move_uploaded_file($file_hinh["tmp_name"], $ten_hinh);
+						}
+
+						$this->SanPham->Sua($ten, $gia, $ten_hinh, $mota, $loai, $id);
+						header('location:index.php?q=danh-sach-san-pham');
+						break;
+					}
+
+					case 'xoa-san-pham':{
+						$this->SanPham->Xoa($_GET['id']);
+						header('location:index.php?q=danh-sach-san-pham');
+						break;
+					}
+
+					case 'danh-sach-don-hang':{
+						$this->view('layout', [
+							'trang' => 'danhsachdonhang',
+							'donhang' => $this->DonHang->DanhSach(),
+						]);
+						break;
+					}
+
+					case 'xoa-don-hang':{
+						$this->DonHang->Xoa($_GET['id']);
+						header('location:index.php?q=danh-sach-don-hang');
+						break;
+					}
+
+					case 'chi-tiet-giay':{
+						$this->view('layout', [
+							'trang' => 'chitiet',
+							'sanpham' => $this->SanPham->ChiTiet($_GET['id']),
+						]);
+						break;
+					}
+
+					case 'don-hang-cua-toi':{
+						$this->view('layout', [
+							'trang' => 'donhangcuatoi',
+							'donhang' => $this->DonHang->DonHangCuaToi(),
+						]);
+						break;
+					}
+
+					case 'dat-mua':{
+						if(isset($_SESSION['loaitk'])){
+							$this->view('layout', [
+								'trang' => 'datmua',
+								'sanpham' => $this->SanPham->ChiTiet($_GET['idsp']),
+							]);
+						}else{
+							header('location:index.php?q=dang-nhap');
+						}
+						break;
+					}
+
+					case 'xu-ly-dat-mua':{
+						$idSP = $_POST['idsp'];
+						$sanpham = $this->SanPham->ChiTiet($idSP);
+						$giaban = $sanpham['gia'];
+						$soluong = $_POST['soluong'];
+						$thanhtien = $soluong * $giaban;
+						$tenKH = $_POST['tenKH'];
+						$diachi = $_POST['diachi'];
+						$sdt = $_POST['sdt'];
+
+						$this->DonHang->Them($idSP, $giaban, $soluong, $thanhtien, $tenKH, $diachi, $sdt);
+						header("location:index.php?q=don-hang-cua-toi");
+						break;
+					}
+
+					default:{
+						$this->view('layout', [
+							'trang' => 'trangchu',
+							'sanpham' => $this->SanPham->SanPhamMoi(),
+						]);
+						break;
+					}
+				}
+			}
+			
+		}
+	}
+?>
