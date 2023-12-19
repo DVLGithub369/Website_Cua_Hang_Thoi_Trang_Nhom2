@@ -7,6 +7,10 @@
 			</div>
 			<div class="text-center">
 				<button type="submit" class="btn btn-primary">Lưu dữ liệu</button>
+				<div class="form-group">
+				<label>MÔ TẢ</label>
+				<textarea class="form-control" id="mota" name="mota"></textarea>
+			</div>
 			</div>
 		</form>
 	</div>
