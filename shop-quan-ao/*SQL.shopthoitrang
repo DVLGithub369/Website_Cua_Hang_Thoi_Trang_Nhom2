@@ -52,3 +52,115 @@ CREATE TABLE `loaisanpham` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
+
+
+--
+-- Table structure for table `sanpham`
+--
+
+CREATE TABLE `sanpham` (
+  `id` int(11) NOT NULL,
+  `ten` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `gia` int(11) NOT NULL,
+  `hinh` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mota` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `loai` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id_taikhoan` int(11) NOT NULL,
+  `ngaytao` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `taikhoan`
+--
+
+CREATE TABLE `taikhoan` (
+  `id` int(11) NOT NULL,
+  `tendangnhap` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `matkhau` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `loaitk` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'member'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `taikhoan`
+--
+
+INSERT INTO `taikhoan` (`id`, `tendangnhap`, `matkhau`, `loaitk`) VALUES
+(1, 'admin', '356a192b7913b04c54574d18c28d46e6395428ab', 'admin'),
+(2, 'tuan', '356a192b7913b04c54574d18c28d46e6395428ab', 'member');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `donhang`
+--
+ALTER TABLE `donhang`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_donhang_sanpham` (`idSP`),
+  ADD KEY `fk_donhang_taikhoan` (`idTaiKhoan`);
+
+--
+-- Indexes for table `loaisanpham`
+--
+ALTER TABLE `loaisanpham`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `sanpham`
+--
+ALTER TABLE `sanpham`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `taikhoan`
+--
+ALTER TABLE `taikhoan`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `tendangnhap` (`tendangnhap`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `donhang`
+--
+ALTER TABLE `donhang`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `loaisanpham`
+--
+ALTER TABLE `loaisanpham`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `sanpham`
+--
+ALTER TABLE `sanpham`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `taikhoan`
+--
+ALTER TABLE `taikhoan`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `donhang`
+--
+ALTER TABLE `donhang`
+  ADD CONSTRAINT `fk_donhang_sanpham` FOREIGN KEY (`idSP`) REFERENCES `sanpham` (`id`),
+  ADD CONSTRAINT `fk_donhang_taikhoan` FOREIGN KEY (`idTaiKhoan`) REFERENCES `taikhoan` (`id`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
