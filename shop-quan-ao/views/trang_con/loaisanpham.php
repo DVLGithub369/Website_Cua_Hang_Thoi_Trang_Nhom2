@@ -10,7 +10,7 @@
 			<thead class="thead-light">
 				<tr>
 					<th scope="col">#</th>
-					<th scope="col">Tên loại giày</th>
+					<th scope="col">Loại sản phẩm</th>
 					<th scope="col" width="40"></th>
 				</tr>
 			</thead>
