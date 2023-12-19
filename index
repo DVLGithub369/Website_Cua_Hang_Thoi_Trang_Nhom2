@@ -1,1 +1,111 @@
+<?php 
+	session_start();
+	require_once './models/TaiKhoan.php';
+	require_once './models/LoaiSP.php';
+	require_once './models/SanPham.php';
+	require_once './models/DonHang.php';
 
+	new duong_dan();
+	class duong_dan{
+		private $TaiKhoan;
+		private $Loai;
+		private $SanPham;
+		private $DonHang;
+
+		function __construct(){
+			$this->TaiKhoan = new TaiKhoan();
+			$this->Loai = new LoaiSP();
+			$this->SanPham = new SanPham();
+			$this->DonHang = new DonHang();
+
+			$this->Routes();
+		}
+
+		public function view($view, $data=[]){
+			require_once "./views/".$view.".php";
+		}
+
+		public function generateRandomString() {
+		    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		    $randomString = '';
+
+		    for ($i = 0; $i < 12; $i++) {
+		        $randomString .= $characters[rand(0, strlen($characters) - 1)];
+		    }
+
+		    return $randomString;
+		}
+
+		public function Routes(){
+			if(isset($_GET['q'])){
+				$q = $_GET['q'];
+			}else{
+				$q = "";
+			}
+
+			if(isset($_GET['search']))
+				$search = $_GET['search'];
+
+			if(isset($search)){
+				$this->view('layout', [
+					'trang' => 'timkiem',
+					'sanpham' => $this->SanPham->Tim($_GET['search']),
+				]);
+			}
+
+			if(isset($q)){
+				switch ($q) {
+					case 'dang-nhap':{
+						$this->view('layout', [
+							'trang' => 'dangnhap',
+						]);
+						break;
+					}
+
+					case 'xu-ly-dang-nhap':{
+						$user = $_POST['tendangnhap'];
+						$pass = $_POST['matkhau'];
+						$taikhoan = $this->TaiKhoan->DangNhap($user, $pass);
+						if(is_array($taikhoan)){
+							$_SESSION['id'] = $taikhoan['id'];
+							$_SESSION['tenDN'] = $taikhoan['tendangnhap'];
+							$_SESSION['loaitk'] = $taikhoan['loaitk'];
+							header('location:./');
+						}else{
+							header('location:index.php?q=dang-nhap');
+						}
+						break;
+					}
+
+					case 'dang-xuat':{
+						unset($_SESSION['id']);
+						unset($_SESSION['tenDN']);
+						unset($_SESSION['loaitk']);
+						header('location:./');
+						break;
+					}
+
+					case 'dang-ky':{
+						$this->view('layout', [
+							'trang' => 'dangky',
+						]);
+						break;
+					}
+
+					case 'xu-ly-dang-ky':{
+						$user = $_POST['tendangnhap'];
+						$pass = $_POST['matkhau'];
+						$loai = 'member';
+						$this->TaiKhoan->Insert($user, $pass, $loai);
+						header('location:index.php?q=dang-nhap');
+						break;
+					}
+
+				
+					}
+				}
+			}
+			
+		}
+	}
+?>
