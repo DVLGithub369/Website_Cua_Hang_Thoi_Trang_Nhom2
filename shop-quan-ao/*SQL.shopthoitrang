@@ -1,0 +1,54 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Dec 14, 2023 at 04:37 AM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 8.0.19
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `shopthoitrang`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `donhang`
+--
+
+CREATE TABLE `donhang` (
+  `id` int(11) NOT NULL,
+  `idSP` int(11) NOT NULL,
+  `idTaiKhoan` int(11) NOT NULL,
+  `giaban` double NOT NULL,
+  `soluong` int(11) NOT NULL,
+  `thanhtien` double NOT NULL,
+  `tenKH` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `diachi` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sdt` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ngaytao` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `loaisanpham`
+--
+
+CREATE TABLE `loaisanpham` (
+  `id` int(11) NOT NULL,
+  `ten` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
